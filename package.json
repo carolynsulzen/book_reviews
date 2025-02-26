@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "express": "^4.21.2",
+    "generate-gitignore": "^0.2.6",
     "gitignore": "^0.7.0",
     "nodemon": "^3.1.9",
     "pg": "^8.13.3"
