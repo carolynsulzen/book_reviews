@@ -7,7 +7,19 @@ try{
 }catch(err){console.log(err)};
 }
 
-// getReviews
+const getReviews = async () => {
+  try{
+   const { rows:reviews } = await client.query(`
+     SELECT * FROM reviews`);
+ 
+     return reviews;
+  }catch(err){console.log(err)}
+ }
+
+
 // deleteReviews
 
-module.exports = createReviews;
+module.exports = {
+  createReviews,
+  getReviews
+}

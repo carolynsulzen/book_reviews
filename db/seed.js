@@ -1,7 +1,8 @@
+require('dotenv').config(); 
 const client = require('./client.js');
-const createBooks = require('./books.js');
-const createReviews = require('./reviews.js');
-const createUsers = require('./users.js');
+const { createBooks } = require('./books.js');
+const {createReviews} = require('./reviews.js');
+const {createUsers} = require('./users.js');
 
 
 const dropTables = async () => {
@@ -28,7 +29,7 @@ const createTables = async () => {
     await client.query(`CREATE TABLE users(
       id SERIAL PRIMARY KEY,
       username VARCHAR(35) UNIQUE NOT NULL,
-      password VARCHAR(40) NOT NULL)`)
+      password VARCHAR(100) NOT NULL)`)
   }catch(err){console.log(err)};
 
   try{
@@ -49,17 +50,17 @@ const syncAndSeed = async () => {
   await createTables();
   console.log(`CREATED TABLES`);
 
-  await createUsers('samIam', '1234');
-  await createUsers('penguinsRcool', '5678');
-  await createUsers('rogerRabbit', '9101');
+  const sam = await createUsers('samIam', '1234');
+  const penguin = await createUsers('penguinsRcool', '5678');
+  const roger = await createUsers('rogerRabbit', '9101');
   console.log('USERS CREATED');
-  await createBooks('Happy Potter', 'JK Rawlins');
-  await createBooks('Lord of the Necklaces', 'JRR Tollway');
-  await createBooks('Sherlock Houses', 'Arturo Canon Dale');
+  const hp = await createBooks('Happy Potter', 'JK Rawlins');
+  const lotn = await createBooks('Lord of the Necklaces', 'JRR Tollway');
+  const sh = await createBooks('Sherlock Houses', 'Arturo Canon Dale');
   console.log(`CREATED BOOKS`);
-  await createReviews(2,3);
-  await createReviews(1,1);
-  await createReviews(1,3);
+  await createReviews(sam.id,hp.id);
+  await createReviews(sam.id,sh.id);
+  await createReviews(roger.id,lotn.id);
   console.log(`CREATED REVIEWS`);
   
 
