@@ -1,5 +1,6 @@
 const client = require('./client.js');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const createUsers = async (inputUsername, inputPassword) => {
   try{
@@ -26,8 +27,10 @@ try{
     } else {
       const hashedPassword = user.password;
       const isPasswordMatch = await bcrypt.compare(attemptedPassword, hashedPassword );
+      
       if(isPasswordMatch){
-        return user.username;
+        const assignedToken = await jwt.sign({userId: user.userId}, process.env.JWT_SECRET);
+        return assignedToken;
     }else{
       throw Error ('username and password do not match');
     }
@@ -35,8 +38,18 @@ try{
 }catch(err){console.log(err)}
 }
 
+const getUserByToken = async (token) =>{
+ const {userId} = await jwt.verify(token, process.env.JWT_SECRET);
+ console.log(userId);
+ const {rows} = await client.query(`
+  SELECT id, username FROM users WHERE id = ${userId} `);
+  const user = rows[0];
+  return user;
+}
+
 // deleteUsers
 
 module.exports = {
   createUsers,
-  getUser}
+  getUser,
+getUserByToken}

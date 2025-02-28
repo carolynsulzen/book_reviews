@@ -1,7 +1,7 @@
 require('dotenv').config(); 
 const client = require('./db/client.js');
 client.connect();
-const {createUsers, getUser} = require('./db/users.js');
+const {createUsers, getUser,getUserByToken} = require('./db/users.js');
 const {createBooks, getBooks} = require('./db/books.js');
 const {createReviews, getReviews} = require ('./db/reviews.js');
 const express = require('express');
@@ -49,16 +49,6 @@ app.get('/api/v1/items/:itemId/reviews', async (req, res, next) => {
     console.log(foundReviews);
   }
   else {console.log(`not working`)}
-})
-
-app.post('/api/v1/login', async(req, res, next) => {
-  try{
-    const { username, password } = req.body;
-    const loggedInUser = await getUser(username, password);
-    res.send(loggedInUser);
-  }catch(err){console.log(err)
-    next(err);
-  }
 });
 
 app.post('/api/v1/register', async (req, res, next)=>{
@@ -69,6 +59,23 @@ app.post('/api/v1/register', async (req, res, next)=>{
     res.send(newUser);
   }catch(err){console.log(err)};
 });
+
+app.post('/api/v1/login', async(req, res, next) => {
+  try{
+    const { username, password } = req.body;
+    const token = await getUser(username, password);
+    res.send({token: token});
+  }catch(err){console.log(err)
+    next(err);
+  }
+});
+
+app.get('/api/v1/me', async (req, res, next) =>{
+  const token = req.headers.authorization;
+  const user = await getUserByToken(token)
+  res.send(user);
+} )
+
 
 app.post('/api/v1/books', async (req, res, next)=>{
   const { name, author } = req.body;
